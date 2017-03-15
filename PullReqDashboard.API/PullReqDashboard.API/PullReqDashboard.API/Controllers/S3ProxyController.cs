@@ -69,8 +69,7 @@ namespace PullReqDashboard.API.Controllers
                     BucketName = this.BucketName,
                     Key = key
                 });
-
-                this.Response.ContentType = getResponse.Headers.ContentType;
+                Response.ContentType = getResponse.Headers.ContentType;
                 getResponse.ResponseStream.CopyTo(this.Response.Body);
             }
             catch (AmazonS3Exception e)

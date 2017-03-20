@@ -10,7 +10,7 @@ export class PullReqAPIService {
   }
 
   getPullRequests(){
-    return this.http.get('https://w3qcs22w8h.execute-api.us-east-1.amazonaws.com/Prod/api/values/1').map(res => res.json);
+    return this.http.get('http://pullreqdashboardapi-dev.us-east-2.elasticbeanstalk.com/api/values/2').map(res => res.json);
   }
 
 }

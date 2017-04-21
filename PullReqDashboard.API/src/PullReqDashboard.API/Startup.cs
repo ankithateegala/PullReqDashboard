@@ -47,7 +47,7 @@ namespace PullReqDashboard.API
 
             services.AddMvc();
 
-            //services.AddSwaggerGen();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -61,6 +61,9 @@ namespace PullReqDashboard.API
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUi();
         }
     }
 }

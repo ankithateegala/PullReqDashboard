@@ -6,11 +6,11 @@ import 'rxjs/add/operator/map';
 export class PullReqAPIService {
 
   constructor(private http: Http) { 
-    console.log("a-service");
   }
 
   getPullRequests(){
-    return this.http.get('http://pullreqdashboardapi-dev.us-east-2.elasticbeanstalk.com/api/values/2').map(res => res.json);
+    return this.http
+                .get('http://pullreqdashboardapi-dev.us-east-2.elasticbeanstalk.com/api/values/2')
+                .map(res => res.json);
   }
-
 }

@@ -12,7 +12,9 @@ export class AppComponent {
     PullRequests: PullReq[];
 
   constructor(private pullReqAPIService: PullReqAPIService) {
-    this.pullReqAPIService.getPullRequests().subscribe(res => (console.log(res)));
+    this.pullReqAPIService.getPullRequests().subscribe(gets => { 
+        console.log(gets);
+    });
     this.PullRequests = [
       {      
         title: "Title1",
@@ -20,7 +22,7 @@ export class AppComponent {
         col2: "col2",
         col3: "col3"
       },
-      {      
+      {
         title: "Title2",
         col1: "col1",
         col2: "col2",

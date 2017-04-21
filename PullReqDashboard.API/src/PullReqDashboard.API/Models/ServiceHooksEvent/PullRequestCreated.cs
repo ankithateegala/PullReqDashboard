@@ -7,18 +7,18 @@ namespace PullReqDashboard.API.Models.ServiceHooksEvent
 {
     public class PullRequestCreated
     {
-        Guid id { get; set; }
-        string eventType { get; set; }
-        string creationDate { get; set; }
-        string title { get; set; }
-        string url { get; set; }
+        public Guid id { get; set; }
+        public string eventType { get; set; }
+        public string creationDate { get; set; }
+        public string title { get; set; }
+        public string url { get; set; }
 
-        CreatedBy createdBy { get; set; }
+        public CreatedBy createdBy { get; set; }
     }
 
     public class CreatedBy
     {
-        string displayName { get; set; }
+        public string displayName { get; set; }
         
     }
 }

@@ -9,7 +9,7 @@ namespace PullReqDashboard.API.Models.DTO
     {
         public Guid id { get; set; }
         public string eventType { get; set; }
-        public string creationDate { get; set; }
+        public DateTime createdAt { get; set; }
         public string title { get; set; }
         public string url { get; set; }
         public string createdBy { get; set; }

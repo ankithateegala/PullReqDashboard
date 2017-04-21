@@ -17,19 +17,19 @@ namespace PullReqDashboard.API.Controllers
     {
         public readonly IDBHelper _DBHelper;
 
-        //// GET api/PullRequest
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
+        // GET api/PullRequest
+        [HttpGet]
+        public IEnumerable<string> Get()
+        {
+            return new string[] { "value1", "value2" };
+        }
 
-        //// GET api/PullRequest/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        // GET api/PullRequest/5
+        [HttpGet("{id}")]
+        public string Get(int id)
+        {
+            return "value";
+        }
 
         // POST api/PullRequest
         [HttpPost]
@@ -39,12 +39,32 @@ namespace PullReqDashboard.API.Controllers
             {
                 id = pullRequestCreated.id,
                 eventType = pullRequestCreated.eventType,
-                creationDate = pullRequestCreated.creationDate,
+                createdAt = DateTime.Parse(pullRequestCreated.createdAt),
                 title = pullRequestCreated.title,
                 url = pullRequestCreated.url,
                 createdBy = pullRequestCreated.createdBy.displayName
             };
             _DBHelper.InsertPullRequest(pullRequest);
+        }
+
+        // POST api/PullRequest
+        [HttpPost]
+        public void Post([FromBody]PullRequestUpdated pullRequestUpdated)
+        {
+            
+            
+            //get the latest approved reviewer
+            var approvedBy = pullRequestUpdated.reviewers.First().displayName;
+
+
+
+            var approved = new Approved
+            {
+                pullRequestId = pullRequestUpdated.id,
+                approvedBy = approvedBy,
+                approvedAt = DateTime.Now
+            };
+            _DBHelper.InsertApproved(approved);
         }
 
         //// PUT api/PullRequest/5

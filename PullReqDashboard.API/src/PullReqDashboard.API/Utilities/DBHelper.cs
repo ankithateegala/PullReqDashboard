@@ -31,12 +31,23 @@ namespace PullReqDashboard.API.Utilities
 
         public void InsertPullRequest(PullRequest pullRequest)
         {
-            string insertQuery = "INSERT INTO PULLREQUEST ([DAY], Eat1, Eat2, Eat3, Eat4, Eat5, Eat6, userid)"
-                                + " VALUES(@Day, @Eat1, @Eat2, @Eat3, @Eat4, @Eat5, @Eat6, 1)";
+            string insertQuery = "INSERT INTO PULLREQUEST (id, eventType, createdAt, title, url, createdBy)"
+                                + " VALUES(@id, @eventType, @createdAt, @title, @url, @createdBy)";
 
             using (IDbConnection dbConnection = Connection)
             {
                 dbConnection.Execute(insertQuery, pullRequest);
+            }
+        }
+
+        public void InsertApproved(Approved approved)
+        {
+            string insertQuery = "INSERT INTO APPROVED (pullRequestid, approvedBy, approvedAt)"
+                                + " VALUES(@pullRequestId, @approvedBy, @approvedAt)";
+
+            using (IDbConnection dbConnection = Connection)
+            {
+                dbConnection.Execute(insertQuery, approved);
             }
         }
     }

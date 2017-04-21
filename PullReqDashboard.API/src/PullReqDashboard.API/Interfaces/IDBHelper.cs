@@ -10,5 +10,6 @@ namespace PullReqDashboard.API.Interfaces
     {
         void InsertPullRequest(PullRequest pullRequest);
         PullRequest GetPullRequest();
+        void InsertApproved(Approved approved);
     }
 }

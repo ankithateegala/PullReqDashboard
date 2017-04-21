@@ -10,7 +10,7 @@ export class PullReqAPIService {
 
   getPullRequests(){
     return this.http
-                .get('http://pullreqdashboardapi-dev.us-east-2.elasticbeanstalk.com/api/values/2')
+                .get('http://localhost:17897/api/PullRequest/5')
                 .map(res => res.json);
   }
 }

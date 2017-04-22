@@ -17,11 +17,16 @@ namespace PullReqDashboard.API.Controllers
     {
         public readonly IDBHelper _DBHelper;
 
+        public PullRequestController(IDBHelper DBHelper)
+        {
+            _DBHelper = DBHelper;
+        }
         // GET api/PullRequest
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<PullRequest> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _DBHelper.GetPullRequests().Result;
+            //return new PullRequest[0];
         }
 
         // GET api/PullRequest/5
@@ -33,7 +38,7 @@ namespace PullReqDashboard.API.Controllers
 
         // POST api/PullRequest
         [HttpPost]
-        public void Post([FromBody]PullRequestCreated pullRequestCreated)
+        public async Task Post([FromBody]PullRequestCreated pullRequestCreated)
         {
             var pullRequest = new PullRequest
             {
@@ -44,27 +49,30 @@ namespace PullReqDashboard.API.Controllers
                 url = pullRequestCreated.url,
                 createdBy = pullRequestCreated.createdBy.displayName
             };
-            _DBHelper.InsertPullRequest(pullRequest);
+            await _DBHelper.InsertPullRequest(pullRequest);
         }
 
         // POST api/PullRequest
         [HttpPost]
-        public void Post([FromBody]PullRequestUpdated pullRequestUpdated)
+        public async Task Post([FromBody]PullRequestUpdated pullRequestUpdated)
         {
-            
-            
-            //get the latest approved reviewer
-            var approvedBy = pullRequestUpdated.reviewers.First().displayName;
-
-
-
-            var approved = new Approved
+            //if there are reviewers with vote == 10(approved)
+            if (pullRequestUpdated.reviewers.Where(y => (y.vote == 10)).Count() > 0)
             {
-                pullRequestId = pullRequestUpdated.id,
-                approvedBy = approvedBy,
-                approvedAt = DateTime.Now
-            };
-            _DBHelper.InsertApproved(approved);
+                //get the existing list of approvers and compare
+                var approvers = _DBHelper.GetApprovers(pullRequestUpdated.id).Result;
+                var newApprover =  pullRequestUpdated.reviewers.Where(x => !approvers.Contains(x.displayName));
+                if (newApprover.Count() != 1) { throw new ArgumentException(); }//why would this happen??
+
+                var approvedBy = newApprover.First().displayName;
+                var approved = new Approved
+                {
+                    pullRequestId = pullRequestUpdated.id,
+                    approvedBy = approvedBy,
+                    approvedAt = DateTime.Now
+                };
+                await _DBHelper.InsertApproved(approved);
+            }
         }
 
         //// PUT api/PullRequest/5

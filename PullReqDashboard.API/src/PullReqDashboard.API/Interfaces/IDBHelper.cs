@@ -8,8 +8,9 @@ namespace PullReqDashboard.API.Interfaces
 {
     public interface IDBHelper
     {
-        void InsertPullRequest(PullRequest pullRequest);
-        PullRequest GetPullRequest();
-        void InsertApproved(Approved approved);
+        Task InsertPullRequest(PullRequest pullRequest);
+        Task<IEnumerable<PullRequest>> GetPullRequests();
+        Task InsertApproved(Approved approved);
+        Task<IEnumerable<string>> GetApprovers(Guid id);
     }
 }

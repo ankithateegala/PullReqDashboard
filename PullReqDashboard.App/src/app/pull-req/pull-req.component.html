@@ -1,20 +1,19 @@
 <table  class = "innerTable">
   <tr>
     <td>
-      <div class="title-card">
-        <p>{{PullRequest.title}}</p>
-      </div>
-    </td>
-    <td>
-      <app-card [text] = PullRequest.col1>
+      <app-card [text] = PullRequest.title>
       </app-card>
     </td>
     <td>
-      <app-card [text] = PullRequest.col2>
+      <app-card [hidden] = hideFirst [text] = ApproverCount>
       </app-card>
     </td>
     <td>
-      <app-card [text] = PullRequest.col3>
+      <app-card [hidden] = hideSecond [text] = PullRequest.createdBy>
+      </app-card>
+    </td>
+    <td>
+      <app-card [hidden] = hideThird [text] = PullRequest.createdBy>
       </app-card>
     </td>
   </tr>

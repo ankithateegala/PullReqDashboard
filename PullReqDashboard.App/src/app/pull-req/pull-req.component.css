@@ -1,9 +1,10 @@
 .innerTable{
     height: 100%; 
     width: 100%;
-}
-td {
-    padding: 5px; 
-    border-top: 1px solid black;
     border-collapse: collapse;
+}
+
+td {
+    width:25%;
+    height: 100%;
 }

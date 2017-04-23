@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using PullReqDashboard.API.Models.ServiceHooksEvent;
 using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Models.DTO;
+using PullReqDashboard.API.Models.Response;
 
 namespace PullReqDashboard.API.Controllers
 {
@@ -23,10 +24,9 @@ namespace PullReqDashboard.API.Controllers
         }
         // GET api/PullRequest
         [HttpGet]
-        public IEnumerable<PullRequest> Get()
+        public IEnumerable<GetPullRequest> Get()
         {
             return _DBHelper.GetPullRequests().Result;
-            //return new PullRequest[0];
         }
 
         // GET api/PullRequest/5
@@ -44,7 +44,7 @@ namespace PullReqDashboard.API.Controllers
             {
                 id = pullRequestCreated.id,
                 eventType = pullRequestCreated.eventType,
-                createdAt = DateTime.Parse(pullRequestCreated.createdAt),
+                createdAt = DateTime.UtcNow,
                 title = pullRequestCreated.title,
                 url = pullRequestCreated.url,
                 createdBy = pullRequestCreated.createdBy.displayName
@@ -53,23 +53,24 @@ namespace PullReqDashboard.API.Controllers
         }
 
         // POST api/PullRequest
-        [HttpPost]
+        [HttpPost("updated")]
         public async Task Post([FromBody]PullRequestUpdated pullRequestUpdated)
         {
+            //throw if id not exists
             //if there are reviewers with vote == 10(approved)
             if (pullRequestUpdated.reviewers.Where(y => (y.vote == 10)).Count() > 0)
             {
                 //get the existing list of approvers and compare
-                var approvers = _DBHelper.GetApprovers(pullRequestUpdated.id).Result;
+                var approvers = _DBHelper.GetApprovers(pullRequestUpdated).Result;
                 var newApprover =  pullRequestUpdated.reviewers.Where(x => !approvers.Contains(x.displayName));
                 if (newApprover.Count() != 1) { throw new ArgumentException(); }//why would this happen??
 
                 var approvedBy = newApprover.First().displayName;
-                var approved = new Approved
+                var approved = new Models.DTO.Approved
                 {
                     pullRequestId = pullRequestUpdated.id,
                     approvedBy = approvedBy,
-                    approvedAt = DateTime.Now
+                    approvedAt = DateTime.UtcNow
                 };
                 await _DBHelper.InsertApproved(approved);
             }

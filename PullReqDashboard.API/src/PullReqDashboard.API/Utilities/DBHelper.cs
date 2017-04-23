@@ -7,6 +7,8 @@ using PullReqDashboard.API.Models.DTO;
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
+using PullReqDashboard.API.Models.ServiceHooksEvent;
+using PullReqDashboard.API.Models.Response;
 
 namespace PullReqDashboard.API.Utilities
 {
@@ -24,10 +26,6 @@ namespace PullReqDashboard.API.Utilities
                 return new SqlConnection(connectionString);
             }
         }
-        public PullRequest GetPullRequest()
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task InsertPullRequest(PullRequest pullRequest)
         {
@@ -40,7 +38,7 @@ namespace PullReqDashboard.API.Utilities
             }
         }
 
-        public async Task InsertApproved(Approved approved)
+        public async Task InsertApproved(Models.DTO.Approved approved)
         {
             string insertQuery = "INSERT INTO APPROVED (pullRequestid, approvedBy, approvedAt)"
                                 + " VALUES(@pullRequestId, @approvedBy, @approvedAt)";
@@ -50,23 +48,34 @@ namespace PullReqDashboard.API.Utilities
                 await dbConnection.ExecuteAsync(insertQuery, approved);
             }
         }
-        public async Task<IEnumerable<string>> GetApprovers(Guid id)
+        public async Task<IEnumerable<string>> GetApprovers(PullRequestUpdated pullRequest)
         {
-            string selectQuery = "SELECT * FROM APPROVED WHERE pullRequestid=@id)";
+            string selectQuery = "SELECT approvedBy FROM APPROVED WHERE pullRequestid = @id";
 
             using (IDbConnection dbConnection = Connection)
             {
-                return await dbConnection.QueryAsync<string>(selectQuery, id);
+                return await dbConnection.QueryAsync<string>(selectQuery, pullRequest);
             }
         }
 
-        public async Task<IEnumerable<PullRequest>> GetPullRequests()
+        public async Task<IEnumerable<GetPullRequest>> GetPullRequests()
         {
-            string selectQuery = "SELECT * FROM PULLREQUEST";
-
+            string selectPullrequestQuery = "SELECT id, title, url, createdBy FROM PULLREQUEST";
+            string selectApprovedQuery = "SELECT pullRequestId, approvedBy, approvedAt FROM APPROVED";
+            IEnumerable<GetPullRequest> pullRequestList;
+            IEnumerable<Approved> approvedList;
+            IEnumerable<Approved> temp;
             using (IDbConnection dbConnection = Connection)
             {
-                return await dbConnection.QueryAsync<PullRequest>(selectQuery);
+                pullRequestList = await dbConnection.QueryAsync<GetPullRequest>(selectPullrequestQuery);
+                approvedList = await dbConnection.QueryAsync<Approved>(selectApprovedQuery);
+                foreach (GetPullRequest pullRequest in pullRequestList)
+                {
+                    temp = new List<Approved>();
+                    temp = approvedList.Where(x => (x.pullRequestId == pullRequest.id));
+                    pullRequest.approver = new List<Approved>(temp);
+                }
+                return pullRequestList;
             }
         }
     }

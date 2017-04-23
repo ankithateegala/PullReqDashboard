@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs/Observable';
+import { PullReq } from "../pull-req/pull-req";
 
 @Injectable()
-export class PullReqAPIService {
+export class PullReqAPIService 
+{
+  constructor(private http: Http) {}
 
-  constructor(private http: Http) { 
-  }
-
-  getPullRequests(){
-    return this.http
-                .get('http://localhost:17897/api/PullRequest/5')
-                .map(res => res.json);
+  getPullRequests(): Observable<PullReq[]>
+  {
+    return this.http.get('http://localhost:5000/api/pullrequest')
+                    .map(res => res.json());
   }
 }

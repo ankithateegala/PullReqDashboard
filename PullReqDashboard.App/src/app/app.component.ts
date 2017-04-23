@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PullReq } from "./Pull-Req/pull-req";
+import { PullReq } from "./pull-req/pull-req";
 import { PullReqAPIService } from './services/pull-req-api.service'
 
 @Component({
@@ -9,32 +9,11 @@ import { PullReqAPIService } from './services/pull-req-api.service'
   providers: [PullReqAPIService]
 })
 export class AppComponent {
-    PullRequests: PullReq[];
+    PullRequests:PullReq[];
 
   constructor(private pullReqAPIService: PullReqAPIService) {
-    this.pullReqAPIService.getPullRequests().subscribe(gets => { 
-        console.log(gets);
+    this.pullReqAPIService.getPullRequests().subscribe(a => {
+      this.PullRequests = a;
     });
-    this.PullRequests = [
-      {      
-        title: "Title1",
-        col1: "col1",
-        col2: "col2",
-        col3: "col3"
-      },
-      {
-        title: "Title2",
-        col1: "col1",
-        col2: "col2",
-        col3: "col3"
-      },
-      {      
-        title: "Title3",
-        col1: "col1",
-        col2: "col2",
-        col3: "col3"
-      }
-    ];
-
-   }
+  }
 }

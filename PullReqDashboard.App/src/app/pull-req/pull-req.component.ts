@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { PullReq } from "./pull-req";
-import { Approver } from "./approver";
+import { PullReq } from "../interfaces/pull-req";
+import { Approver } from "../interfaces/approver";
 
 @Component({
   selector: 'app-pull-req',

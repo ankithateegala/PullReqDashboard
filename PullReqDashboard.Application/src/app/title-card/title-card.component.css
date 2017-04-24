@@ -1,0 +1,10 @@
+.title-card{
+  display:inline-block;
+  height: 100%;
+  width: 100%;
+}
+
+p{
+  font-size: 2em;
+  align-content: center;
+}

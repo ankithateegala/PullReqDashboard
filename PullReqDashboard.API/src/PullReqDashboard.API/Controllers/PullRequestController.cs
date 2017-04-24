@@ -46,6 +46,9 @@ namespace PullReqDashboard.API.Controllers
                 createdBy = pullRequestCreated.createdBy.displayName
             };
             await _DBHelper.InsertPullRequest(pullRequest);
+
+            var pullRequests = await _DBHelper.GetPullRequests();
+            await Clients.All.UpdatePullRequests(pullRequests);
         }
 
         // PUT api/PullRequest

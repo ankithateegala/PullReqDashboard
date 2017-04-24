@@ -46,10 +46,9 @@ namespace PullReqDashboard.API
 
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
-
             services.AddMvc();
-
             services.AddSwaggerGen();
+            services.AddSignalR();
 
             services.AddTransient<IDBHelper, DBHelper>();
         }
@@ -61,11 +60,9 @@ namespace PullReqDashboard.API
             loggerFactory.AddDebug();
 
             app.UseApplicationInsightsRequestTelemetry();
-
             app.UseApplicationInsightsExceptionTelemetry();
-
             app.UseMvc();
-
+            app.UseSignalR();
             app.UseSwagger();
             app.UseSwaggerUi();
         }

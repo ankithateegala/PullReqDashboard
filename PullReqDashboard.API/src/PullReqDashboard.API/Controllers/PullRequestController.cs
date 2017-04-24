@@ -8,32 +8,28 @@ using PullReqDashboard.API.Models.ServiceHooksEvent;
 using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Models.DTO;
 using PullReqDashboard.API.Models.Response;
+using PullReqDashboard.API.Utilities;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
 
 namespace PullReqDashboard.API.Controllers
 {
     [EnableCors("MyPolicy")]
 
     [Route("api/[controller]")]
-    public class PullRequestController : Controller
+    public class PullRequestController : ApiHubController<Broadcaster>
     {
         public readonly IDBHelper _DBHelper;
 
-        public PullRequestController(IDBHelper DBHelper)
+        public PullRequestController(IConnectionManager signalRConnectionManager, IDBHelper DBHelper)
+            :base(signalRConnectionManager)
         {
             _DBHelper = DBHelper;
         }
         // GET api/PullRequest
         [HttpGet]
-        public IEnumerable<GetPullRequest> Get()
+        public async Task<IEnumerable<GetPullRequest>> Get()
         {
-            return _DBHelper.GetPullRequests().Result;
-        }
-
-        // GET api/PullRequest/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            return await _DBHelper.GetPullRequests();
         }
 
         // POST api/PullRequest
@@ -52,9 +48,8 @@ namespace PullReqDashboard.API.Controllers
             await _DBHelper.InsertPullRequest(pullRequest);
         }
 
-        // POST api/PullRequest
-        [HttpPost("updated")]
-        public async Task Post([FromBody]PullRequestUpdated pullRequestUpdated)
+        // PUT api/PullRequest
+        public async Task Put([FromBody]PullRequestUpdated pullRequestUpdated)
         {
             //throw if id not exists
             //if there are reviewers with vote == 10(approved)
@@ -73,14 +68,11 @@ namespace PullReqDashboard.API.Controllers
                     approvedAt = DateTime.UtcNow
                 };
                 await _DBHelper.InsertApproved(approved);
+
+                var pullRequests = await _DBHelper.GetPullRequests();
+                await Clients.All.UpdatePullRequests(pullRequests);
             }
         }
-
-        //// PUT api/PullRequest/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody]string value)
-        //{
-        //}
 
         //// DELETE api/PullRequest/5
         //[HttpDelete("{id}")]

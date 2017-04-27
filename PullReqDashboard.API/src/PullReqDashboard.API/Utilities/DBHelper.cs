@@ -17,7 +17,7 @@ namespace PullReqDashboard.API.Utilities
         private string connectionString;
         public DBHelper()
         {
-            connectionString = @"Server=witomyf-ohio.cdqgdsizulw9.us-east-2.rds.amazonaws.com,1433;Database=PullRequestDashboard-Dev;";
+            connectionString = @"Server=witomyf-ohio.cdqgdsizulw9.us-east-2.rds.amazonaws.com,1433;Database=PullRequestDashboard-Dev;User Id =admin;Password=adminwitomyfohio;";
         }
         private IDbConnection Connection
         {

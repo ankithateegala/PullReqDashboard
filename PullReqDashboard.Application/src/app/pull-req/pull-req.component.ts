@@ -20,17 +20,17 @@ export class PullReqComponent implements OnInit {
     this.ApproverCount = this.PullRequest.approver.length;
 
     if(this.ApproverCount == 1){
-      this.hideFirst = false;
-      this.hideSecond = true;
-      this.hideThird = true;
-    }
-    else if(this.ApproverCount > 1){
       this.hideFirst = true;
       this.hideSecond = false;
       this.hideThird = true;
     }
-    else if(this.ApproverCount == 0){
+    else if(this.ApproverCount > 1){
       this.hideFirst = true;
+      this.hideSecond = true;
+      this.hideThird = false;
+    }
+    else if(this.ApproverCount == 0){
+      this.hideFirst = false;
       this.hideSecond = true;
       this.hideThird = true;
     }

@@ -40,19 +40,20 @@ export class Connection implements IConnection {
 
     private async startInternal(transportType: TransportType): Promise<void> {
         try {
-            this.connectionId = await this.httpClient.get(`${this.url}/negotiate?${this.queryString}`);
+             //this.connectionId = await this.httpClient.get(`${this.url}/negotiate?${this.queryString}`);
+             await this.httpClient.get(`${this.url}`);
 
             // the user tries to stop the the connection when it is being started
             if (this.connectionState == ConnectionState.Disconnected) {
                 return;
             }
-
-            this.queryString = `id=${this.connectionId}`;
+            
+            //this.queryString = `id=${this.connectionId}`;
 
             this.transport = this.createTransport(transportType);
             this.transport.onDataReceived = this.onDataReceived;
             this.transport.onClosed = e => this.stopConnection(true, e);
-            await this.transport.connect(this.url, this.queryString);
+            await this.transport.connect(this.url,"");
             // only change the state if we were connecting to not overwrite
             // the state if the connection is already marked as Disconnected
             this.changeState(ConnectionState.Connecting, ConnectionState.Connected);

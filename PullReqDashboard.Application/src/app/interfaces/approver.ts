@@ -1,3 +1,3 @@
 export interface Approver {
-    name:string;
+    approvedBy: string;
 }

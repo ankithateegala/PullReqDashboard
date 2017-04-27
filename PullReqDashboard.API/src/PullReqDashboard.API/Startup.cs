@@ -48,9 +48,12 @@ namespace PullReqDashboard.API
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddMvc();
             services.AddSwaggerGen();
-            services.AddSignalR();
-
+            services.AddRouting();
+            services.AddSockets();
+            
             services.AddTransient<IDBHelper, DBHelper>();
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -61,8 +64,8 @@ namespace PullReqDashboard.API
 
             app.UseApplicationInsightsRequestTelemetry();
             app.UseApplicationInsightsExceptionTelemetry();
-            app.UseMvc();
             app.UseSignalR();
+            app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUi();
         }

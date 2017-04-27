@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
-import { PullReq } from "../interfaces/pull-req";
+import { PullReq } from '../interfaces/pull-req';
 
 @Injectable()
 export class PullReqAPIService 

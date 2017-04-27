@@ -1,15 +1,7 @@
 import { DataReceived, TransportClosed } from './Common';
 import { IHttpClient } from './HttpClient';
 import * as Formatters from './Formatters';
-
-// declare class WebSocket {
-//     constructor(url: string);
-//     onopen: any;
-//     onerror: any;
-//     onmessage: any;
-//     onclose: any;
-//     send: any;
-// };
+import {EventSource} from 'eventsource';
 
 export enum TransportType {
     WebSockets,
@@ -30,8 +22,8 @@ export class WebSocketTransport implements ITransport {
 
     connect(url: string, queryString: string = ''): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            url = url.replace(/^http/, 'ws');
-            const connectUrl = url + '/ws?' + queryString;
+             url = url.replace(/^http/, 'ws');
+             const connectUrl = url + '/SignalREndpoint/ws?' + queryString;
 
             const webSocket = new WebSocket(connectUrl);
 

@@ -6,7 +6,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./title-card.component.css']
 })
 export class TitleCardComponent implements OnInit {
-  @Input() text:String
+  @Input() title:String
 
   constructor() { }
 

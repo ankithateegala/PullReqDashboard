@@ -9,21 +9,21 @@ using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Models.DTO;
 using PullReqDashboard.API.Models.Response;
 using PullReqDashboard.API.Utilities;
-using Microsoft.AspNetCore.SignalR.Infrastructure;
 
 namespace PullReqDashboard.API.Controllers
 {
     [EnableCors("MyPolicy")]
 
     [Route("api/[controller]")]
-    public class PullRequestController : ApiHubController<Broadcaster>
+    public class PullRequestController: Controller
     {
-        public readonly IDBHelper _DBHelper;
+        private readonly IDBHelper _DBHelper;
+        private readonly SignalRHub _SignalRHub;
 
-        public PullRequestController(IConnectionManager signalRConnectionManager, IDBHelper DBHelper)
-            :base(signalRConnectionManager)
+        public PullRequestController(IDBHelper DBHelper, SignalRHub lifetimeManager)
         {
             _DBHelper = DBHelper;
+            _SignalRHub = lifetimeManager;
         }
         // GET api/PullRequest
         [HttpGet]
@@ -48,7 +48,7 @@ namespace PullReqDashboard.API.Controllers
             await _DBHelper.InsertPullRequest(pullRequest);
 
             var pullRequests = await _DBHelper.GetPullRequests();
-            await Clients.All.UpdatePullRequests(pullRequests);
+            await _SignalRHub.SendToAllAsync(pullRequests);
         }
 
         // PUT api/PullRequest
@@ -64,7 +64,7 @@ namespace PullReqDashboard.API.Controllers
                 if (newApprover.Count() != 1) { throw new ArgumentException(); }//why would this happen??
 
                 var approvedBy = newApprover.First().displayName;
-                var approved = new Models.DTO.Approved
+                var approved = new Approved
                 {
                     pullRequestId = pullRequestUpdated.id,
                     approvedBy = approvedBy,
@@ -73,7 +73,7 @@ namespace PullReqDashboard.API.Controllers
                 await _DBHelper.InsertApproved(approved);
 
                 var pullRequests = await _DBHelper.GetPullRequests();
-                await Clients.All.UpdatePullRequests(pullRequests);
+                await _SignalRHub.SendToAllAsync(pullRequests);
             }
         }
 
@@ -82,5 +82,7 @@ namespace PullReqDashboard.API.Controllers
         //public void Delete(int id)
         //{
         //}
+
+
     }
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import {Approver} from '../interfaces/approver';
 
 @Component({
   selector: 'app-card',
@@ -6,12 +7,14 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./card.component.css']
 })
 export class CardComponent implements OnInit {
-  @Input() text:String
+  @Input() createdBy: String;
+  @Input() Approvers: Approver[];
 
   constructor() {
    }
 
   ngOnInit() {
+    console.log(this.Approvers.length);
   }
 
 }

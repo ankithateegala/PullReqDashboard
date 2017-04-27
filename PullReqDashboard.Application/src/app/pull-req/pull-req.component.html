@@ -1,19 +1,19 @@
 <table  class = "innerTable">
   <tr>
     <td>
-      <app-title-card [text] = PullRequest.title>
+      <app-title-card [title] = PullRequest.title>
       </app-title-card>
     </td>
     <td>
-      <app-card [hidden] = hideFirst [text] = PullRequest.createdBy>
+      <app-card [hidden] = hideFirst [createdBy] = PullRequest.createdBy [Approvers] = PullRequest.approver>
       </app-card>
     </td>
     <td>
-      <app-card [hidden] = hideSecond [text] = PullRequest.createdBy>
+      <app-card [hidden] = hideSecond [createdBy] = PullRequest.createdBy [Approvers] = PullRequest.approver>
       </app-card>
     </td>
     <td>
-      <app-card [hidden] = hideThird [text] = PullRequest.createdBy>
+      <app-card [hidden] = hideThird [createdBy] = PullRequest.createdBy [Approvers] = PullRequest.approver>
       </app-card>
     </td>
   </tr>

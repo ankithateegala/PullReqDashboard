@@ -40,7 +40,7 @@ export class Connection implements IConnection {
 
     private async startInternal(transportType: TransportType): Promise<void> {
         try {
-             //this.connectionId = await this.httpClient.get(`${this.url}/negotiate?${this.queryString}`);
+             this.connectionId = await this.httpClient.get(`${this.url}/negotiate?${this.queryString}`);
              await this.httpClient.get(`${this.url}`);
 
             // the user tries to stop the the connection when it is being started
@@ -48,7 +48,7 @@ export class Connection implements IConnection {
                 return;
             }
             
-            //this.queryString = `id=${this.connectionId}`;
+            this.queryString = `id=${this.connectionId}`;
 
             this.transport = this.createTransport(transportType);
             this.transport.onDataReceived = this.onDataReceived;

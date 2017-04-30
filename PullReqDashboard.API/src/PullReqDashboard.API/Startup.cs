@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Utilities;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
 
 namespace PullReqDashboard.API
 {
@@ -36,6 +34,15 @@ namespace PullReqDashboard.API
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
+            //var settings = new JsonSerializerSettings();
+            //settings.ContractResolver = new SignalRContractResolver();
+
+            //var serializer = JsonSerializer.Create(settings);
+
+            //services.Add(new ServiceDescriptor(typeof(JsonSerializer),
+            //             provider => serializer,
+            //             ServiceLifetime.Transient));
+
             //cors
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
@@ -49,9 +56,9 @@ namespace PullReqDashboard.API
             services.AddMvc();
             services.AddSwaggerGen();
             services.AddRouting();
-            services.AddSockets();
             
             services.AddTransient<IDBHelper, DBHelper>();
+            services.AddTransient<IConnectionManager, ConnectionManager>();
 
             services.AddSignalR();
         }
@@ -64,8 +71,15 @@ namespace PullReqDashboard.API
 
             app.UseApplicationInsightsRequestTelemetry();
             app.UseApplicationInsightsExceptionTelemetry();
+            app.UseStaticFiles();
+
+            app.UseCors("MyPolicy");
+
+            app.UseWebSockets();
             app.UseSignalR();
+           
             app.UseMvc();
+
             app.UseSwagger();
             app.UseSwaggerUi();
         }

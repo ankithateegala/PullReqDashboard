@@ -2,34 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PullReqDashboard.API.Models.ServiceHooksEvent;
 using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Models.DTO;
 using PullReqDashboard.API.Models.Response;
 using PullReqDashboard.API.Utilities;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
 
 namespace PullReqDashboard.API.Controllers
 {
-    [EnableCors("MyPolicy")]
 
     [Route("api/[controller]")]
     public class PullRequestController: Controller
     {
         private readonly IDBHelper _DBHelper;
-        private readonly SignalRHub _SignalRHub;
+        private IConnectionManager _connectionManager;
 
-        public PullRequestController(IDBHelper DBHelper, SignalRHub lifetimeManager)
+        public PullRequestController(IDBHelper DBHelper, IConnectionManager connectionManager)
         {
             _DBHelper = DBHelper;
-            _SignalRHub = lifetimeManager;
+            _connectionManager = connectionManager;
         }
         // GET api/PullRequest
         [HttpGet]
         public async Task<IEnumerable<GetPullRequest>> Get()
         {
-            return await _DBHelper.GetPullRequests();
+            var pullRequests = await _DBHelper.GetPullRequests();
+            _connectionManager.GetHubContext<SignalRHub>().Clients.All.test("SignalR connection establised");
+            return pullRequests;
         }
 
         // POST api/PullRequest
@@ -48,7 +49,8 @@ namespace PullReqDashboard.API.Controllers
             await _DBHelper.InsertPullRequest(pullRequest);
 
             var pullRequests = await _DBHelper.GetPullRequests();
-            await _SignalRHub.SendToAllAsync(pullRequests);
+            var h = _connectionManager.GetHubContext<SignalRHub>();
+            h.Clients.All.updatePullRequests(pullRequests);
         }
 
         // PUT api/PullRequest
@@ -73,7 +75,8 @@ namespace PullReqDashboard.API.Controllers
                 await _DBHelper.InsertApproved(approved);
 
                 var pullRequests = await _DBHelper.GetPullRequests();
-                await _SignalRHub.SendToAllAsync(pullRequests);
+                _connectionManager.GetHubContext<SignalRHub>().Clients.All.updatePullRequests(pullRequests);
+
             }
         }
 

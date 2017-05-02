@@ -14,5 +14,6 @@ namespace PullReqDashboard.API.Interfaces
         Task<IEnumerable<GetPullRequest>> GetPullRequests();
         Task InsertApproved(Models.DTO.Approved approved);
         Task<IEnumerable<string>> GetApprovers(PullRequestUpdated pullRequest);
+        Task DeletePullRequest(PullRequestMerged pullRequestMerged);
     }
 }

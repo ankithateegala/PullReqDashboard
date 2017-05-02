@@ -58,6 +58,16 @@ namespace PullReqDashboard.API.Utilities
             }
         }
 
+        public async Task DeletePullRequest(PullRequestMerged pullRequestMerged)
+        {
+            string insertQuery = "DELETE FROM PULLREQUEST WHERE id = @id";
+
+            using (IDbConnection dbConnection = Connection)
+            {
+                await dbConnection.ExecuteAsync(insertQuery, pullRequestMerged);
+            }
+        }
+
         public async Task<IEnumerable<GetPullRequest>> GetPullRequests()
         {
             string selectPullrequestQuery = "SELECT id, title, url, createdBy FROM PULLREQUEST";

@@ -25,7 +25,6 @@ namespace PullReqDashboard.API.Controllers
             _connectionManager = connectionManager;
         }
         // GET api/PullRequest
-        [HttpGet]
         public async Task<IEnumerable<GetPullRequest>> Get()
         {
             var pullRequests = await _DBHelper.GetPullRequests();
@@ -54,6 +53,7 @@ namespace PullReqDashboard.API.Controllers
         }
 
         // PUT api/PullRequest
+        [HttpPut]
         public async Task Put([FromBody]PullRequestUpdated pullRequestUpdated)
         {
             //throw if id not exists
@@ -80,12 +80,14 @@ namespace PullReqDashboard.API.Controllers
             }
         }
 
-        //// DELETE api/PullRequest/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        // DELETE api/PullRequest
+        [HttpDelete]
+        public async Task Delete([FromBody]PullRequestMerged pullRequestMerged)
+        {
+            await _DBHelper.DeletePullRequest(pullRequestMerged);
 
-
+            var pullRequests = await _DBHelper.GetPullRequests();
+            _connectionManager.GetHubContext<SignalRHub>().Clients.All.updatePullRequests(pullRequests);
+        }
     }
 }

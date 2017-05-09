@@ -70,7 +70,7 @@ namespace PullReqDashboard.API.Utilities
 
         public async Task<IEnumerable<GetPullRequest>> GetPullRequests()
         {
-            string selectPullrequestQuery = "SELECT id, title, url, createdBy FROM PULLREQUEST";
+            string selectPullrequestQuery = "SELECT id, title, url, createdBy FROM PULLREQUEST order by createdAt";
             string selectApprovedQuery = "SELECT pullRequestId, approvedBy, approvedAt FROM APPROVED";
             IEnumerable<GetPullRequest> pullRequestList;
             IEnumerable<Approved> approvedList;

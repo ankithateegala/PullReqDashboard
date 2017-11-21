@@ -5,8 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Utilities;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.SignalR.Infrastructure;
 
 namespace PullReqDashboard.API
 {
@@ -58,7 +56,7 @@ namespace PullReqDashboard.API
             services.AddRouting();
             
             services.AddTransient<IDBHelper, DBHelper>();
-            services.AddTransient<IConnectionManager, ConnectionManager>();
+            //services.AddTransient<IConnectionManager, ConnectionManager>();
 
             services.AddSignalR();
         }
@@ -68,16 +66,18 @@ namespace PullReqDashboard.API
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
-            app.UseApplicationInsightsRequestTelemetry();
-            app.UseApplicationInsightsExceptionTelemetry();
+            
             app.UseStaticFiles();
 
             app.UseCors("MyPolicy");
 
             app.UseWebSockets();
-            app.UseSignalR();
-           
+            
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<SignalRHub>("PRDHub");
+            });
+
             app.UseMvc();
 
             app.UseSwagger();

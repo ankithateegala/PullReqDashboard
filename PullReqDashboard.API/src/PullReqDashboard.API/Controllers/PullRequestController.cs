@@ -8,7 +8,7 @@ using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Models.DTO;
 using PullReqDashboard.API.Models.Response;
 using PullReqDashboard.API.Utilities;
-using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Microsoft.AspNetCore.SignalR;
 
 namespace PullReqDashboard.API.Controllers
 {
@@ -17,18 +17,17 @@ namespace PullReqDashboard.API.Controllers
     public class PullRequestController: Controller
     {
         private readonly IDBHelper _DBHelper;
-        private IConnectionManager _connectionManager;
+        private IHubContext<SignalRHub> _hub;
 
-        public PullRequestController(IDBHelper DBHelper, IConnectionManager connectionManager)
+        public PullRequestController(IDBHelper DBHelper, IHubContext<SignalRHub> hub)
         {
             _DBHelper = DBHelper;
-            _connectionManager = connectionManager;
+            _hub = hub;
         }
         // GET api/PullRequest
         public async Task<IEnumerable<GetPullRequest>> Get()
         {
             var pullRequests = await _DBHelper.GetPullRequests();
-            _connectionManager.GetHubContext<SignalRHub>().Clients.All.test("SignalR connection establised");
             return pullRequests;
         }
 
@@ -48,8 +47,7 @@ namespace PullReqDashboard.API.Controllers
             await _DBHelper.InsertPullRequest(pullRequest);
 
             var pullRequests = await _DBHelper.GetPullRequests();
-            var h = _connectionManager.GetHubContext<SignalRHub>();
-            h.Clients.All.updatePullRequests(pullRequests);
+            await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
         }
 
         // PUT api/PullRequest
@@ -58,7 +56,7 @@ namespace PullReqDashboard.API.Controllers
         {
             //throw if id not exists
             //if there are reviewers with vote == 10(approved)
-            if (pullRequestUpdated.reviewers.Where(y => (y.vote == 10)).Count() > 0)
+            if (pullRequestUpdated.reviewers.Any(y => y.vote == 10))
             {
                 //get the existing list of approvers and compare
                 var approvers = _DBHelper.GetApprovers(pullRequestUpdated).Result;
@@ -75,8 +73,7 @@ namespace PullReqDashboard.API.Controllers
                 await _DBHelper.InsertApproved(approved);
 
                 var pullRequests = await _DBHelper.GetPullRequests();
-                _connectionManager.GetHubContext<SignalRHub>().Clients.All.updatePullRequests(pullRequests);
-
+                await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
             }
         }
 
@@ -87,7 +84,7 @@ namespace PullReqDashboard.API.Controllers
             await _DBHelper.DeletePullRequest(pullRequestMerged);
 
             var pullRequests = await _DBHelper.GetPullRequests();
-            _connectionManager.GetHubContext<SignalRHub>().Clients.All.updatePullRequests(pullRequests);
+            await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
         }
     }
 }

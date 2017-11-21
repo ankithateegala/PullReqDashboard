@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4E15EA8D-D8FE-440F-8309-977344BC54F1}"
 	ProjectSection(SolutionItems) = preProject
@@ -9,11 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4E15EA8D-D8F
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A565F8C9-41AE-4EE2-B3A3-14123F57B009}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PullReqDashboard.API", "src\PullReqDashboard.API\PullReqDashboard.API.xproj", "{0887F8F7-A7D5-46C9-88FB-CCD541F982F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PullReqDashboard.API", "src\PullReqDashboard.API\PullReqDashboard.API.csproj", "{0887F8F7-A7D5-46C9-88FB-CCD541F982F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,5 +28,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0887F8F7-A7D5-46C9-88FB-CCD541F982F0} = {4E15EA8D-D8FE-440F-8309-977344BC54F1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C562833-821D-46EA-A82E-8724598E7004}
 	EndGlobalSection
 EndGlobal

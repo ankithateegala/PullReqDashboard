@@ -1,0 +1,20 @@
+<table  class = "innerTable">
+  <tr>
+    <td>
+      <app-title-card [title] = PullRequest.title>
+      </app-title-card>
+    </td>
+    <td>
+      <app-card [hidden] = hideFirst [createdBy] = PullRequest.createdBy [Approvers] = PullRequest.approver>
+      </app-card>
+    </td>
+    <td>
+      <app-card [hidden] = hideSecond [createdBy] = PullRequest.createdBy [Approvers] = PullRequest.approver>
+      </app-card>
+    </td>
+    <td>
+      <app-card [hidden] = hideThird [createdBy] = PullRequest.createdBy [Approvers] = PullRequest.approver>
+      </app-card>
+    </td>
+  </tr>
+</table>

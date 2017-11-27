@@ -1,0 +1,26 @@
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
+
+import { AppComponent } from './app.component';
+import { CardComponent } from './card/card.component';
+import { PullReqComponent } from './pull-req/pull-req.component';
+import { TitleCardComponent } from './title-card/title-card.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    CardComponent,
+    PullReqComponent,
+    TitleCardComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }

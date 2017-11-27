@@ -1,5 +1,4 @@
 ﻿using PullReqDashboard.API.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +6,7 @@ using PullReqDashboard.API.Models.DTO;
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
-using PullReqDashboard.API.Models.ServiceHooksEvent;
+using PullReqDashboard.API.Models.VSTSServiceHooksEvent;
 using PullReqDashboard.API.Models.Response;
 
 namespace PullReqDashboard.API.Utilities
@@ -81,7 +80,6 @@ namespace PullReqDashboard.API.Utilities
                 approvedList = await dbConnection.QueryAsync<Approved>(selectApprovedQuery);
                 foreach (GetPullRequest pullRequest in pullRequestList)
                 {
-                    temp = new List<Approved>();
                     temp = approvedList.Where(x => (x.pullRequestId == pullRequest.id));
                     pullRequest.approver = new List<Approved>(temp);
                 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PullReqDashboard.API.Models.ServiceHooksEvent
+namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
 {
     public class PullRequestCreated
     {

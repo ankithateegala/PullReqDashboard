@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PullReqDashboard.API.Models.DTO;
-using PullReqDashboard.API.Models.ServiceHooksEvent;
+using PullReqDashboard.API.Models.VSTSServiceHooksEvent;
 using PullReqDashboard.API.Models.Response;
 
 namespace PullReqDashboard.API.Interfaces

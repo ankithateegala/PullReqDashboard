@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using PullReqDashboard.API.Models.ServiceHooksEvent;
+using PullReqDashboard.API.Models.VSTSServiceHooksEvent;
 using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Models.DTO;
 using PullReqDashboard.API.Models.Response;
 using PullReqDashboard.API.Utilities;
 using Microsoft.AspNetCore.SignalR;
+using PullReqDashboard.API.Models.SlackOutgoingWebhook;
 
 namespace PullReqDashboard.API.Controllers
 {
@@ -33,21 +34,52 @@ namespace PullReqDashboard.API.Controllers
 
         // POST api/PullRequest
         [HttpPost]
-        public async Task Post([FromBody]PullRequestCreated pullRequestCreated)
-        {
-            var pullRequest = new PullRequest
-            {
-                id = pullRequestCreated.id,
-                eventType = pullRequestCreated.eventType,
-                createdAt = DateTime.UtcNow,
-                title = pullRequestCreated.title,
-                url = pullRequestCreated.url,
-                createdBy = pullRequestCreated.createdBy.displayName
-            };
-            await _DBHelper.InsertPullRequest(pullRequest);
+        //public async Task Post([FromBody]PullRequestCreated pullRequestCreated)
+        //{
+        //    var pullRequest = new PullRequest
+        //    {
+        //        id = pullRequestCreated.id,
+        //        eventType = pullRequestCreated.eventType,
+        //        createdAt = DateTime.UtcNow,
+        //        title = pullRequestCreated.title,
+        //        url = pullRequestCreated.url,
+        //        createdBy = pullRequestCreated.createdBy.displayName
+        //    };
+        //    await _DBHelper.InsertPullRequest(pullRequest);
 
-            var pullRequests = await _DBHelper.GetPullRequests();
-            await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+        //    var pullRequests = await _DBHelper.GetPullRequests();
+        //    await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+        //}
+
+            // POST api/PullRequest
+        [HttpPost]
+        public async Task Post([FromBody]Data data)
+        {
+            PullRequest pullRequest = null;
+            var userName = "noName";
+            var prTitle = "Title";
+            var prUrl = "noUrl";
+            if (data.Text.Contains("created"))
+            {
+                var splitText = data.Text.Split(" created ");
+                userName = splitText[0];
+                prTitle = splitText[1].Split(" in ")[1];
+                pullRequest = new PullRequest
+                {
+                    eventType = "slack.created",
+                    createdAt = DateTime.UtcNow,
+                    title = prTitle,
+                    url = prUrl,
+                    createdBy = userName
+                };
+            }
+
+            if (pullRequest != null)
+            {
+                await _DBHelper.InsertPullRequest(pullRequest);
+                var pullRequests = await _DBHelper.GetPullRequests();
+                await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+            }
         }
 
         // PUT api/PullRequest

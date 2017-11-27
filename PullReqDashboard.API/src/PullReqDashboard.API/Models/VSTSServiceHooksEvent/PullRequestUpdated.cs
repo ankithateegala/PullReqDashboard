@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PullReqDashboard.API.Models.ServiceHooksEvent
+namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
 {
     public class PullRequestUpdated
     {

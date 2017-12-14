@@ -66,6 +66,8 @@ namespace PullReqDashboard.API
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseDeveloperExceptionPage();
             
             app.UseStaticFiles();
 

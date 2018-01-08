@@ -4,7 +4,7 @@ namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
 {
     public class PullRequestCreated
     {
-        public Guid id { get; set; }
+        public string id { get; set; }
         public string eventType { get; set; }
         public string createdAt { get; set; }
         public string title { get; set; }

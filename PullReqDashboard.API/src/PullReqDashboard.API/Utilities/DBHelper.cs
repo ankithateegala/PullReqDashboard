@@ -28,8 +28,8 @@ namespace PullReqDashboard.API.Utilities
 
         public async Task InsertPullRequest(PullRequest pullRequest)
         {
-            string insertQuery = "INSERT INTO PULLREQUEST (id, eventType, createdAt, title, url, createdBy)"
-                                + " VALUES(@id, @eventType, @createdAt, @title, @url, @createdBy)";
+            string insertQuery = "INSERT INTO PULLREQUEST (id, eventType, createdAt, title, url, createdBy, [from])"
+                                + " VALUES(@id, @eventType, @createdAt, @title, @url, @createdBy, @from)";
 
             using (IDbConnection dbConnection = Connection)
             {
@@ -69,7 +69,7 @@ namespace PullReqDashboard.API.Utilities
 
         public async Task<IEnumerable<GetPullRequest>> GetPullRequests()
         {
-            string selectPullrequestQuery = "SELECT id, title, url, createdBy FROM PULLREQUEST order by createdAt";
+            string selectPullrequestQuery = "SELECT id, title, url, createdBy FROM PULLREQUEST where [from] = 'slack' order by createdAt";
             string selectApprovedQuery = "SELECT pullRequestId, approvedBy, approvedAt FROM APPROVED";
             IEnumerable<GetPullRequest> pullRequestList;
             IEnumerable<Approved> approvedList;

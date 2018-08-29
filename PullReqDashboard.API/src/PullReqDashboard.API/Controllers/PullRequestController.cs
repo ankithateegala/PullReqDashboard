@@ -33,27 +33,25 @@ namespace PullReqDashboard.API.Controllers
         }
 
         // POST api/PullRequest
-        [HttpPost]
-        //public async Task Post([FromBody]PullRequestCreated pullRequestCreated)
-        //{
-        //    var pullRequest = new PullRequest
-        //    {
-        //        id = pullRequestCreated.id,
-        //        eventType = pullRequestCreated.eventType,
-        //        createdAt = DateTime.UtcNow,
-        //        title = pullRequestCreated.title,
-        //        url = pullRequestCreated.url,
-        //        createdBy = pullRequestCreated.createdBy.displayName
-        //    };
-        //    await _DBHelper.InsertPullRequest(pullRequest);
+        public async Task Post([FromBody]PullRequestCreated pullRequestCreated)
+        {
+            var pullRequest = new PullRequest
+            {
+                id = pullRequestCreated.id,
+                eventType = pullRequestCreated.eventType,
+                createdAt = DateTime.UtcNow,
+                title = pullRequestCreated.title,
+                url = pullRequestCreated.url,
+                createdBy = pullRequestCreated.createdBy.displayName
+            };
+            await _DBHelper.InsertPullRequest(pullRequest);
 
-        //    var pullRequests = await _DBHelper.GetPullRequests();
-        //    await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
-        //}
+            var pullRequests = await _DBHelper.GetPullRequests();
+            await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+        }
 
-            // POST api/PullRequest
-        [HttpPost]
-        public async Task Post([FromBody]Data data)
+        // POST api/PullRequest
+        public async Task PostFromSlack([FromBody]Data data)
         {
             PullRequest pullRequest = null;
             var userName = "noName";

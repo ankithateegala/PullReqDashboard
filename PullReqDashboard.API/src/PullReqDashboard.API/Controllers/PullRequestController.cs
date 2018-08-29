@@ -25,6 +25,7 @@ namespace PullReqDashboard.API.Controllers
             _DBHelper = DBHelper;
             _hub = hub;
         }
+
         // GET api/PullRequest
         public async Task<IEnumerable<GetPullRequest>> Get()
         {
@@ -33,6 +34,7 @@ namespace PullReqDashboard.API.Controllers
         }
 
         // POST api/PullRequest
+        [HttpPost]
         public async Task Post([FromBody]PullRequestCreated pullRequestCreated)
         {
             var pullRequest = new PullRequest
@@ -42,7 +44,8 @@ namespace PullReqDashboard.API.Controllers
                 createdAt = DateTime.UtcNow,
                 title = pullRequestCreated.title,
                 url = pullRequestCreated.url,
-                createdBy = pullRequestCreated.createdBy.displayName
+                createdBy = pullRequestCreated.createdBy.displayName,
+                from = "tfs"
             };
             await _DBHelper.InsertPullRequest(pullRequest);
 
@@ -50,25 +53,33 @@ namespace PullReqDashboard.API.Controllers
             await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
         }
 
-        // POST api/PullRequest
-        public async Task PostFromSlack([FromBody]Data data)
+
+        // POST api/PullRequest/FromSlack
+        [HttpPost("FromSlack")]
+        public async Task PostFromSlack([FromBody]PullRequestFromSlack PullRequestFromSlack)
         {
             PullRequest pullRequest = null;
             var userName = "noName";
             var prTitle = "Title";
             var prUrl = "noUrl";
-            if (data.Text.Contains("created"))
+            if (PullRequestFromSlack.Text.Contains("created"))
             {
-                var splitText = data.Text.Split(" created ");
+                var splitText = PullRequestFromSlack.Text.Split(" created ");
                 userName = splitText[0];
-                prTitle = splitText[1].Split(" in ")[1];
+                splitText = splitText[1].Split(" in ");
+                var repo = splitText[1];
+                splitText = splitText[0].Split(" (");
+                prTitle = splitText[1].TrimEnd(')');
+
                 pullRequest = new PullRequest
                 {
+                    id = splitText[0],
                     eventType = "slack.created",
                     createdAt = DateTime.UtcNow,
                     title = prTitle,
                     url = prUrl,
-                    createdBy = userName
+                    createdBy = userName,
+                    from = "slack"
                 };
             }
 

@@ -1,7 +1,7 @@
 ﻿
 namespace PullReqDashboard.API.Models.SlackOutgoingWebhook
 {
-    public class Data
+    public class PullRequestFromSlack
     {
         public string Token { get; set; } //yxiTy0Y0rvYgNM9ua5xBAZit
         //public string team_id { get; set; }

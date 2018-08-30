@@ -47,7 +47,7 @@ namespace PullReqDashboard.API.Controllers
             await _DBHelper.InsertPullRequest(pullRequest);
 
             var pullRequests = await _DBHelper.GetPullRequests();
-            //await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+            await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
         }
 
 

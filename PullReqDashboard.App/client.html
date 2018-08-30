@@ -4,8 +4,9 @@
     <title></title>
 	<meta charset="utf-8" />
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script>
-    <script src="http://localhost:5000/signalr/hubs"></script>
+    <!-- <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script> -->
+    <script src = "https://unpkg.com/@aspnet/signalr@1.0.3/dist/browser/signalr.js" ></script>
+    <!-- <script src="http://localhost:5000/PRDHub"></script> -->
 </head>
 
 <style>
@@ -65,7 +66,7 @@
 
 <script type="text/javascript">
 
-    document.write("<base href='http://localhost:5000' />");
+    document.write("<base href='http://localhost:5000'/>");
         $.ajax({
             url: '/api/pullrequest',
             method: 'GET',
@@ -197,13 +198,22 @@
             console.log(s);
         }
 
-    var hub = $.connection.signalRHub;
+    // var connection = new signalR.HubConnection('/PRDHub', { transport: signalR.TransportType.WebSockets });
 
-    hub.client.updatePullRequests = updatePullRequests;
+	var connection = new signalR.HubConnectionBuilder().withUrl("/PRDHub").build();
+	
+	connection.on("updatePullRequests", function (pullRequests){updatePullRequests(pullRequests)});
+	
+	connection.start().catch(function (err) {
+    	return console.error(err.toString());
+	});
+    // var hub = $.connection.signalRHub;
+
+    // hub.client.updatePullRequests = updatePullRequests;
         
-        hub.client.test = test;
+    //     hub.client.test = test;
 
-        $.connection.hub.logging = true;
-        $.connection.hub.start();
+    //     $.connection.hub.logging = true;
+    //     $.connection.hub.start();
     </script>
 </html>

@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <!-- <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script> -->
+    <script src = "https://unpkg.com/@aspnet/signalr@1.0.3/dist/browser/signalr.js" ></script>
+    <!-- <script src="http://localhost:5000/PRDHub"></script> -->
+</head>
+
+<style>
+    html{
+        height: 100%;
+    }
+    body{
+        height: 100%;
+        background-color:aliceblue;
+    }
+
+    td {
+        height: 11em;
+        width: 25%;
+    }
+    tr{
+        height: 20%;
+        border-bottom: solid;
+        border-color: lightblue;
+    }
+
+    table{
+        height: 100%;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    title-card{
+        display:inline-block;
+        height: 100%;
+        width: 100%;
+        font-size: 2em;
+    }
+    
+    title-card-p{
+        align-content: center;
+    }
+    
+    .card{
+        display:inline-block;
+        border-radius: 25px;
+        border:1px solid black;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+    }
+    table{
+        height: 1em;
+    }
+
+</style>
+
+<body>
+    <table id = "PullRequestTable">
+    </table>
+</body>
+
+<script type="text/javascript">
+
+    $.ajax({
+            url: '/api/pullrequest',
+            method: 'GET',
+            dataType: 'JSON',
+            success: updatePullRequests
+        });
+
+        var intervalid;
+
+         function setWarning(b) {
+             if(b===true){
+                var visibility = 'hidden';
+                intervalid = setInterval(function() {
+                    document.getElementsByTagName('body')[0].style.visibility = visibility;
+                visibility = (visibility === 'visible') ? 'hidden' : 'visible';
+                }, 1000);
+             }
+             else{
+                 clearInterval(intervalid);
+                 document.getElementsByTagName('body')[0].style.visibility = 'visible';
+             }
+        };
+        
+        function updatePullRequests(pullrequests) {
+            if(pullrequests.length > 5){
+                setWarning(true)
+            }
+            else{
+                setWarning(false)
+            }
+            $("#PullRequestTable").empty();
+            $.each(pullrequests, function (index) {
+                var p = pullrequests[index];
+                addPullrequest(p);
+            });
+        }
+
+        var color = {
+                'Ankitha Teegala':'turquoise',
+                'Alex Burck':'BurlyWood',
+                'Junyu Wang':'white',
+                'Johnny Cheng':'crimson',
+                'Siddhant Gahlot':'grey'
+            };
+
+        function addPullrequest(p) {
+            var approverCount = p.approver.length;
+
+            var td1 = '<td>\
+                        <div class = "card" style = "visibility:hidden" >\
+                        </div>\
+                    </td>'
+
+            var td2 = '<td>\
+                        <div class = "card" style = "visibility:hidden" >\
+                        </div>\
+                    </td>'
+
+            var td3 = '<td>\
+                        <div class = "card" style = "visibility:hidden" >\
+                        </div>\
+                    </td>'
+
+            if(approverCount === 1){
+                td2 = '<td>\
+                            <div class = "card">\
+                                <div style = "height: 50%;\
+                                            background-color:' + color[p.createdBy] + ';\
+                                            border-top-left-radius: 25px;\
+                                            border-top-right-radius: 25px;">' 
+                                    + p.createdBy + '</div>\
+                                <div style = "height: 50%;\
+                                            background-color:' + color[p.approver[0].approvedBy] + ';\
+                                            border-bottom-left-radius: 25px;\
+                                            border-bottom-right-radius: 25px;">' 
+                                    + p.approver[0].approvedBy + '</div>\
+                            </div>\
+                        </td>';
+            }
+            else if(approverCount > 1){
+                var height = 100/(approverCount+1);
+                td3 = '<td>\
+                        <div class = "card">\
+                            <div style = "height: '+ height +'%;\
+                                            background-color:' + color[p.createdBy] + ';\
+                                            border-top-left-radius: 25px;\
+                                            border-top-right-radius: 25px;">' 
+                                    + p.createdBy + '</div>';
+
+                $.each(p.approver, function (index) {
+                    td3 = td3+ '<div style = "height: '+ height +'%;\
+                                            background-color:' + color[p.approver[index].approvedBy]+ ';';
+                    if(index === approverCount-1){
+                        td3 = td3 + 'border-bottom-left-radius: 25px;\
+                                            border-bottom-right-radius: 25px;';   
+                    }
+                    td3 = td3 +'">' 
+                                + p.approver[index].approvedBy + 
+                                '</div>'
+                            });
+                 td3 = td3+ '</div>\
+                    </td>';
+            }
+            else if(approverCount === 0){
+                td1 = '<td>\
+                        <div class = "card" >\
+                            <div style = "text-align: center;\
+                                            height: 100%;\
+                                            background-color:' + color[p.createdBy] + ';\
+                                            border-radius: 25px;">' 
+                                    + p.createdBy + '</div>\
+                        </div>\
+                    </td>';
+            }
+            
+            $('#PullRequestTable').append(
+                '<tr>\
+                    <td>\
+                        <title-card>\
+                            <title-card-p>' + p.title + '</title-card-p>\
+                        </title-card>\
+                    </td>'
+                    + td1 + td2 + td3 +
+                '</tr>'
+            );
+        }
+
+        function test(s){
+            console.log(s);
+        }
+
+    // var connection = new signalR.HubConnection('/PRDHub', { transport: signalR.TransportType.WebSockets });
+
+	var connection = new signalR.HubConnectionBuilder().withUrl("/PRDHub").build();
+	
+	connection.on("updatePullRequests", function (pullRequests){updatePullRequests(pullRequests)});
+	
+	connection.start().catch(function (err) {
+    	return console.error(err.toString());
+	});
+    // var hub = $.connection.signalRHub;
+
+    // hub.client.updatePullRequests = updatePullRequests;
+        
+    //     hub.client.test = test;
+
+    //     $.connection.hub.logging = true;
+    //     $.connection.hub.start();
+    </script>
+</html>

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IO;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using PullReqDashboard.API.Interfaces;
 using PullReqDashboard.API.Utilities;
@@ -42,12 +45,12 @@ namespace PullReqDashboard.API
             //             ServiceLifetime.Transient));
 
             //cors
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            }));
+            //services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            //{
+            //    builder.AllowAnyOrigin()
+            //           .AllowAnyMethod()
+            //           .AllowAnyHeader();
+            //}));
 
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
@@ -71,7 +74,7 @@ namespace PullReqDashboard.API
             
             app.UseStaticFiles();
 
-            app.UseCors("MyPolicy");
+            //app.UseCors("MyPolicy");
 
             app.UseWebSockets();
             
@@ -84,6 +87,17 @@ namespace PullReqDashboard.API
 
             app.UseSwagger();
             app.UseSwaggerUi();
+            
+            var options = new FileServerOptions
+            {
+                EnableDefaultFiles = true,
+                DefaultFilesOptions =
+                {
+                    DefaultFileNames = {"client.html"}
+                },
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "App"))
+            };
+            app.UseFileServer(options);
         }
     }
 }

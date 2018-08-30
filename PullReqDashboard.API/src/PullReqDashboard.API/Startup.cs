@@ -77,7 +77,7 @@ namespace PullReqDashboard.API
             
             app.UseSignalR(routes =>
             {
-                routes.MapHub<SignalRHub>("PRDHub");
+                routes.MapHub<SignalRHub>("/PRDHub");
             });
 
             app.UseMvc();

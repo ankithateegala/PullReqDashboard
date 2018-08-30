@@ -9,7 +9,6 @@ using PullReqDashboard.API.Models.DTO;
 using PullReqDashboard.API.Models.Response;
 using PullReqDashboard.API.Utilities;
 using Microsoft.AspNetCore.SignalR;
-using PullReqDashboard.API.Models.SlackOutgoingWebhook;
 
 namespace PullReqDashboard.API.Controllers
 {
@@ -40,12 +39,10 @@ namespace PullReqDashboard.API.Controllers
             var pullRequest = new PullRequest
             {
                 id = pullRequestCreated.id,
-                eventType = pullRequestCreated.eventType,
                 createdAt = DateTime.UtcNow,
-                title = pullRequestCreated.title,
-                url = pullRequestCreated.url,
-                createdBy = pullRequestCreated.createdBy.displayName,
-                from = "tfs"
+                title = pullRequestCreated.resource.title,
+                url = pullRequestCreated.resource.url,
+                createdBy = pullRequestCreated.resource.createdBy.displayName
             };
             await _DBHelper.InsertPullRequest(pullRequest);
 
@@ -55,41 +52,41 @@ namespace PullReqDashboard.API.Controllers
 
 
         // POST api/PullRequest/FromSlack
-        [HttpPost("FromSlack")]
-        public async Task PostFromSlack([FromBody]PullRequestFromSlack PullRequestFromSlack)
-        {
-            PullRequest pullRequest = null;
-            var userName = "noName";
-            var prTitle = "Title";
-            var prUrl = "noUrl";
-            if (PullRequestFromSlack.Text.Contains("created"))
-            {
-                var splitText = PullRequestFromSlack.Text.Split(" created ");
-                userName = splitText[0];
-                splitText = splitText[1].Split(" in ");
-                var repo = splitText[1];
-                splitText = splitText[0].Split(" (");
-                prTitle = splitText[1].TrimEnd(')');
+        //[HttpPost("FromSlack")]
+        //public async Task PostFromSlack([FromBody]PullRequestFromSlack PullRequestFromSlack)
+        //{
+        //    PullRequest pullRequest = null;
+        //    var userName = "noName";
+        //    var prTitle = "Title";
+        //    var prUrl = "noUrl";
+        //    if (PullRequestFromSlack.Text.Contains("created"))
+        //    {
+        //        var splitText = PullRequestFromSlack.Text.Split(" created ");
+        //        userName = splitText[0];
+        //        splitText = splitText[1].Split(" in ");
+        //        var repo = splitText[1];
+        //        splitText = splitText[0].Split(" (");
+        //        prTitle = splitText[1].TrimEnd(')');
 
-                pullRequest = new PullRequest
-                {
-                    id = splitText[0],
-                    eventType = "slack.created",
-                    createdAt = DateTime.UtcNow,
-                    title = prTitle,
-                    url = prUrl,
-                    createdBy = userName,
-                    from = "slack"
-                };
-            }
+        //        pullRequest = new PullRequest
+        //        {
+        //            id = splitText[0],
+        //            eventType = "slack.created",
+        //            createdAt = DateTime.UtcNow,
+        //            title = prTitle,
+        //            url = prUrl,
+        //            createdBy = userName,
+        //            from = "slack"
+        //        };
+        //    }
 
-            if (pullRequest != null)
-            {
-                await _DBHelper.InsertPullRequest(pullRequest);
-                var pullRequests = await _DBHelper.GetPullRequests();
-                await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
-            }
-        }
+        //    if (pullRequest != null)
+        //    {
+        //        await _DBHelper.InsertPullRequest(pullRequest);
+        //        var pullRequests = await _DBHelper.GetPullRequests();
+        //        await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+        //    }
+        //}
 
         // PUT api/PullRequest
         [HttpPut]
@@ -97,11 +94,11 @@ namespace PullReqDashboard.API.Controllers
         {
             //throw if id not exists
             //if there are reviewers with vote == 10(approved)
-            if (pullRequestUpdated.reviewers.Any(y => y.vote == 10))
+            if (pullRequestUpdated.resource.reviewers.Any(y => y.vote == 10))
             {
                 //get the existing list of approvers and compare
                 var approvers = _DBHelper.GetApprovers(pullRequestUpdated).Result;
-                var newApprover =  pullRequestUpdated.reviewers.Where(x => !approvers.Contains(x.displayName));
+                var newApprover =  pullRequestUpdated.resource.reviewers.Where(x => !approvers.Contains(x.displayName));
                 if (newApprover.Count() != 1) { throw new ArgumentException(); }//why would this happen??
 
                 var approvedBy = newApprover.First().displayName;

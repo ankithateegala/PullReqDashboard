@@ -13,23 +13,17 @@ namespace PullReqDashboard.API.Utilities
 {
     public class DBHelper : IDBHelper
     {
-        private string connectionString;
+        private readonly string m_connectionString;
         public DBHelper()
         {
-            connectionString = @"Server=witomyf-ohio.cdqgdsizulw9.us-east-2.rds.amazonaws.com,1433;Database=PullRequestDashboard-Dev;User Id =admin;Password=adminwitomyfohio;";
-        }
-        private IDbConnection Connection
-        {
-            get
-            {
-                return new SqlConnection(connectionString);
-            }
-        }
+            //connectionString = @"Server=witomyf-ohio.cdqgdsizulw9.us-east-2.rds.amazonaws.com,1433;Database=PullRequestDashboard-Dev;User Id =admin;Password=adminwitomyfohio;";
+    }
+        private IDbConnection Connection => new SqlConnection(m_connectionString);
 
         public async Task InsertPullRequest(PullRequest pullRequest)
         {
-            string insertQuery = "INSERT INTO PULLREQUEST (id, eventType, createdAt, title, url, createdBy, [from])"
-                                + " VALUES(@id, @eventType, @createdAt, @title, @url, @createdBy, @from)";
+            string insertQuery = "INSERT INTO PullRequest (Id, CreatedAt, Title, Url, CreatedBy)"
+                                + " VALUES(@id, @createdAt, @title, @url, @createdBy)";
 
             using (IDbConnection dbConnection = Connection)
             {
@@ -37,9 +31,9 @@ namespace PullReqDashboard.API.Utilities
             }
         }
 
-        public async Task InsertApproved(Models.DTO.Approved approved)
+        public async Task InsertApproved(Approved approved)
         {
-            string insertQuery = "INSERT INTO APPROVED (pullRequestid, approvedBy, approvedAt)"
+            string insertQuery = "INSERT INTO Approved (PullRequestid, ApprovedBy, ApprovedAt)"
                                 + " VALUES(@pullRequestId, @approvedBy, @approvedAt)";
 
             using (IDbConnection dbConnection = Connection)
@@ -49,7 +43,7 @@ namespace PullReqDashboard.API.Utilities
         }
         public async Task<IEnumerable<string>> GetApprovers(PullRequestUpdated pullRequest)
         {
-            string selectQuery = "SELECT approvedBy FROM APPROVED WHERE pullRequestid = @id";
+            string selectQuery = "SELECT ApprovedBy FROM Approved WHERE PullRequestid = @id";
 
             using (IDbConnection dbConnection = Connection)
             {
@@ -59,7 +53,7 @@ namespace PullReqDashboard.API.Utilities
 
         public async Task DeletePullRequest(PullRequestMerged pullRequestMerged)
         {
-            string insertQuery = "DELETE FROM PULLREQUEST WHERE id = @id";
+            string insertQuery = "DELETE FROM PullRequest WHERE Id = @id";
 
             using (IDbConnection dbConnection = Connection)
             {
@@ -69,8 +63,8 @@ namespace PullReqDashboard.API.Utilities
 
         public async Task<IEnumerable<GetPullRequest>> GetPullRequests()
         {
-            string selectPullrequestQuery = "SELECT id, title, url, createdBy FROM PULLREQUEST where [from] = 'slack' order by createdAt";
-            string selectApprovedQuery = "SELECT pullRequestId, approvedBy, approvedAt FROM APPROVED";
+            string selectPullrequestQuery = "SELECT Id, Title, Url, CreatedBy FROM PullRequest order by CreatedAt";
+            string selectApprovedQuery = "SELECT PullRequestId, ApprovedBy, ApprovedAt FROM Approved";
             IEnumerable<GetPullRequest> pullRequestList;
             IEnumerable<Approved> approvedList;
             IEnumerable<Approved> temp;
@@ -80,7 +74,7 @@ namespace PullReqDashboard.API.Utilities
                 approvedList = await dbConnection.QueryAsync<Approved>(selectApprovedQuery);
                 foreach (GetPullRequest pullRequest in pullRequestList)
                 {
-                    temp = approvedList.Where(x => (x.pullRequestId == pullRequest.id));
+                    temp = approvedList.Where(x => x.pullRequestId == pullRequest.id);
                     pullRequest.approver = new List<Approved>(temp);
                 }
                 return pullRequestList;

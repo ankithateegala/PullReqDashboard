@@ -11,7 +11,6 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/pullrequest",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,7 +18,7 @@
     "PullReqDashboard.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000/api/pullrequest",
+      "launchUrl": "http://localhost:17897/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

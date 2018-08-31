@@ -49,44 +49,7 @@ namespace PullReqDashboard.API.Controllers
             var pullRequests = await _DBHelper.GetPullRequests();
             await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
         }
-
-
-        // POST api/PullRequest/FromSlack
-        //[HttpPost("FromSlack")]
-        //public async Task PostFromSlack([FromBody]PullRequestFromSlack PullRequestFromSlack)
-        //{
-        //    PullRequest pullRequest = null;
-        //    var userName = "noName";
-        //    var prTitle = "Title";
-        //    var prUrl = "noUrl";
-        //    if (PullRequestFromSlack.Text.Contains("created"))
-        //    {
-        //        var splitText = PullRequestFromSlack.Text.Split(" created ");
-        //        userName = splitText[0];
-        //        splitText = splitText[1].Split(" in ");
-        //        var repo = splitText[1];
-        //        splitText = splitText[0].Split(" (");
-        //        prTitle = splitText[1].TrimEnd(')');
-
-        //        pullRequest = new PullRequest
-        //        {
-        //            id = splitText[0],
-        //            eventType = "slack.created",
-        //            createdAt = DateTime.UtcNow,
-        //            title = prTitle,
-        //            url = prUrl,
-        //            createdBy = userName,
-        //            from = "slack"
-        //        };
-        //    }
-
-        //    if (pullRequest != null)
-        //    {
-        //        await _DBHelper.InsertPullRequest(pullRequest);
-        //        var pullRequests = await _DBHelper.GetPullRequests();
-        //        await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
-        //    }
-        //}
+        
 
         // PUT api/PullRequest
         [HttpPut]
@@ -111,7 +74,8 @@ namespace PullReqDashboard.API.Controllers
                 await _DBHelper.InsertApproved(approved);
 
                 var pullRequests = await _DBHelper.GetPullRequests();
-                //await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+                await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
+
             }
         }
 
@@ -122,7 +86,7 @@ namespace PullReqDashboard.API.Controllers
             await _DBHelper.DeletePullRequest(pullRequestMerged);
 
             var pullRequests = await _DBHelper.GetPullRequests();
-            //await _hub.Clients.All.InvokeAsync("updatePullRequests", pullRequests);
+            await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
         }
     }
 }

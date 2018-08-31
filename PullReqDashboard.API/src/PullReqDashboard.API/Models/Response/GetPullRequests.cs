@@ -10,5 +10,6 @@ namespace PullReqDashboard.API.Models.Response
         public string url { get; set; }
         public string createdBy { get; set; }
         public IEnumerable<Approved> approver { get; set; }
+        public string randomReviewers { get; set; }
     }
 }

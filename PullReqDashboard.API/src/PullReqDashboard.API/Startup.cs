@@ -46,12 +46,6 @@ namespace PullReqDashboard.API
 
             //cors
             services.AddCors();
-            //services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-            //{
-            //    builder.AllowAnyOrigin()
-            //           .AllowAnyMethod()
-            //           .AllowAnyHeader();
-            //}));
 
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);

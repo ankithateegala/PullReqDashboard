@@ -115,57 +115,61 @@
             var td1 = '<td>\
                         <div class = "card" style = "visibility:hidden" >\
                         </div>\
-                    </td>'
+                    </td>';
 
             var td2 = '<td>\
                         <div class = "card" style = "visibility:hidden" >\
                         </div>\
-                    </td>'
+                    </td>';
 
             var td3 = '<td>\
                         <div class = "card" style = "visibility:hidden" >\
                         </div>\
-                    </td>'
+                    </td>';
 
             if(approverCount === 1){
+            	td1 = '<td>\
+                        <div class = "card" >\
+                            <div style = "text-align: center;\
+                                            height: 100%;\
+                                            background-color:' + color[p.createdBy] + ';\
+                                            border-radius: 25px;">' 
+                                    + p.createdBy + '</div>\
+                        </div>\
+                    </td>';
                 td2 = '<td>\
                             <div class = "card">\
-                                <div style = "height: 50%;\
-                                            background-color:' + color[p.createdBy] + ';\
-                                            border-top-left-radius: 25px;\
-                                            border-top-right-radius: 25px;">' 
-                                    + p.createdBy + '</div>\
-                                <div style = "height: 50%;\
+                                <div style = "height: 100%;\
                                             background-color:' + color[p.approver[0].approvedBy] + ';\
-                                            border-bottom-left-radius: 25px;\
-                                            border-bottom-right-radius: 25px;">' 
+                                            border-radius: 25px;">' 
                                     + p.approver[0].approvedBy + '</div>\
                             </div>\
                         </td>';
             }
             else if(approverCount > 1){
-                var height = 100/(approverCount+1);
+            	td1 = '<td>\
+	                <div class = "card" >\
+	                    <div style = "text-align: center;\
+	                                    height: 100%;\
+	                                    background-color:' + color[p.createdBy] + ';\
+	                                    border-radius: 25px;">' 
+	                            + p.createdBy + '</div>\
+	                </div>\
+	            </td>';
+                td2 = '<td>\
+                            <div class = "card">\
+                                <div style = "height: 100%;\
+                                            background-color:' + color[p.approver[0].approvedBy] + ';\
+                                            border-radius: 25px;">' 
+                                    + p.approver[0].approvedBy + '</div>\
+                            </div>\
+                        </td>';
                 td3 = '<td>\
                         <div class = "card">\
-                            <div style = "height: '+ height +'%;\
-                                            background-color:' + color[p.createdBy] + ';\
-                                            border-top-left-radius: 25px;\
-                                            border-top-right-radius: 25px;">' 
-                                    + p.createdBy + '</div>';
-
-                $.each(p.approver, function (index) {
-                    td3 = td3+ '<div style = "height: '+ height +'%;\
-                                            background-color:' + color[p.approver[index].approvedBy]+ ';';
-                    if(index === approverCount-1){
-                        td3 = td3 + 'border-bottom-left-radius: 25px;\
-                                            border-bottom-right-radius: 25px;';   
-                    }
-                    td3 = td3 +'">' 
-                                + p.approver[index].approvedBy + 
-                                '</div>'
-                            });
-                 td3 = td3+ '</div>\
-                    </td>';
+                            <div style = "height: 100%;\
+                                            background-color:' + color[p.approver[1].approvedBy] + ';\
+                                            border-radius: 25px;">' 
+                                    + p.approver[1].approvedBy + '</div>';
             }
             else if(approverCount === 0){
                 td1 = '<td>\
@@ -183,7 +187,7 @@
                 '<tr>\
                     <td>\
                         <title-card>\
-                            <title-card-p>' + p.title + '</title-card-p>\
+                            <title-card-p> <br><br>' +  p.title + " <p style='font-size: 0.5em;'>Random reviewers = " + p.randomReviewers  + '</p> </title-card-p>\
                         </title-card>\
                     </td>'
                     + td1 + td2 + td3 +
@@ -195,8 +199,6 @@
             console.log(s);
         }
 
-    // var connection = new signalR.HubConnection('/PRDHub', { transport: signalR.TransportType.WebSockets });
-
 	var connection = new signalR.HubConnectionBuilder().withUrl("/PRDHub").build();
 	
 	connection.on("updatePullRequests", function (pullRequests){updatePullRequests(pullRequests)});
@@ -204,13 +206,6 @@
 	connection.start().catch(function (err) {
     	return console.error(err.toString());
 	});
-    // var hub = $.connection.signalRHub;
 
-    // hub.client.updatePullRequests = updatePullRequests;
-        
-    //     hub.client.test = test;
-
-    //     $.connection.hub.logging = true;
-    //     $.connection.hub.start();
     </script>
 </html>

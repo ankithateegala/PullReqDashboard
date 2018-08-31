@@ -4,6 +4,7 @@ namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
 {
     public class PullRequestMerged
     {
-        public Guid id { get; set; }
+        public resource resource { get; set; }
+        public message message { get; set; }
     }
 }

@@ -5,9 +5,8 @@ namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
 {
     public class PullRequestCreated
     {
-        public string id { get; set; }
-
         public resource resource { get; set; }
+        public message message { get; set; }
 
     }
 
@@ -18,6 +17,7 @@ namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
 
     public class resource
     {
+        public string pullRequestId { get; set; }
         public createdBy createdBy { get; set; }
         public string title { get; set; }
         public string url { get; set; }
@@ -28,5 +28,10 @@ namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
     {
         public string displayName { get; set; }
         public int vote { get; set; }
+    }
+
+    public class message
+    {
+        public string text { get; set; }
     }
 }

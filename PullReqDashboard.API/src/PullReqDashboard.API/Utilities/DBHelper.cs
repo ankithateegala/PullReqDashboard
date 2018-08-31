@@ -1,4 +1,5 @@
-﻿using PullReqDashboard.API.Interfaces;
+﻿using System;
+using PullReqDashboard.API.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,8 +24,18 @@ namespace PullReqDashboard.API.Utilities
 
         public async Task InsertPullRequest(PullRequest pullRequest)
         {
-            string insertQuery = "INSERT INTO PullRequest (Id, CreatedAt, Title, Url, CreatedBy)"
-                                + " VALUES(@id, @createdAt, @title, @url, @createdBy)";
+            //TODO: Add message
+            var teamNames = new List<string>{ "Benjamin Luo", "Ben Simpson", "Michael Wilkinson", "Steven Wu", "Ankitha Teegala" };
+            teamNames.Remove(pullRequest.createdBy);
+            // Fun way of selecting random string from list. IS NOT EFFICIENT
+            string randomReviewer1 = teamNames.OrderBy(s => Guid.NewGuid()).First();
+            teamNames.Remove(randomReviewer1);
+            string randomReviewer2 = teamNames.OrderBy(s => Guid.NewGuid()).First();
+            string randomReviewers = randomReviewer1 + "," + randomReviewer2;
+            pullRequest.randomReviewers = randomReviewers;
+
+            string insertQuery = "INSERT INTO PullRequest (Id, CreatedAt, Title, Url, CreatedBy, RandomReviewers)"
+                                + " VALUES(@id, @createdAt, @title, @url, @createdBy, @randomReviewers)";
 
             using (IDbConnection dbConnection = Connection)
             {
@@ -44,27 +55,28 @@ namespace PullReqDashboard.API.Utilities
         }
         public async Task<IEnumerable<string>> GetApprovers(PullRequestUpdated pullRequest)
         {
-            string selectQuery = "SELECT ApprovedBy FROM Approved WHERE PullRequestid = @id";
+            string selectQuery = "SELECT ApprovedBy FROM Approved WHERE PullRequestid = @pullRequestId";
 
             using (IDbConnection dbConnection = Connection)
             {
-                return await dbConnection.QueryAsync<string>(selectQuery, pullRequest);
+                return await dbConnection.QueryAsync<string>(selectQuery, pullRequest.resource);
             }
         }
 
-        public async Task DeletePullRequest(PullRequestMerged pullRequestMerged)
+        public async Task ClosePullRequest(PullRequestMerged pullRequestMerged)
         {
-            string insertQuery = "DELETE FROM PullRequest WHERE Id = @id";
+            //TODO: Add closedAt time
+            string insertQuery = "UPDATE PullRequest SET Closed = 1, Message = @text WHERE Id = @pullRequestId";
 
             using (IDbConnection dbConnection = Connection)
             {
-                await dbConnection.ExecuteAsync(insertQuery, pullRequestMerged);
+                await dbConnection.ExecuteAsync(insertQuery, new {pullRequestMerged.resource.pullRequestId, pullRequestMerged.message.text});
             }
         }
 
         public async Task<IEnumerable<GetPullRequest>> GetPullRequests()
         {
-            string selectPullrequestQuery = "SELECT Id, Title, Url, CreatedBy FROM PullRequest order by CreatedAt";
+            string selectPullrequestQuery = "SELECT Id, Title, Url, CreatedBy, RandomReviewers FROM PullRequest where Closed = 0 order by CreatedAt";
             string selectApprovedQuery = "SELECT PullRequestId, ApprovedBy, ApprovedAt FROM Approved";
             IEnumerable<GetPullRequest> pullRequestList;
             IEnumerable<Approved> approvedList;

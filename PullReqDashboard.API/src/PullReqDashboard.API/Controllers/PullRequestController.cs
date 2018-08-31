@@ -38,7 +38,7 @@ namespace PullReqDashboard.API.Controllers
         {
             var pullRequest = new PullRequest
             {
-                id = pullRequestCreated.id,
+                id = pullRequestCreated.resource.pullRequestId,
                 createdAt = DateTime.UtcNow,
                 title = pullRequestCreated.resource.title,
                 url = pullRequestCreated.resource.url,
@@ -51,9 +51,10 @@ namespace PullReqDashboard.API.Controllers
         }
         
 
-        // PUT api/PullRequest
-        [HttpPut]
-        public async Task Put([FromBody]PullRequestUpdated pullRequestUpdated)
+        // POST api/PullRequest/update
+        [HttpPost]
+        [Route("update")]
+        public async Task Update([FromBody]PullRequestUpdated pullRequestUpdated)
         {
             //TODO: throw/skip if id not exists
             //if there are reviewers with vote == 10(approved)
@@ -67,23 +68,26 @@ namespace PullReqDashboard.API.Controllers
                 var approvedBy = newApprover.First().displayName;
                 var approved = new Approved
                 {
-                    pullRequestId = pullRequestUpdated.id,
+                    pullRequestId = pullRequestUpdated.resource.pullRequestId,
                     approvedBy = approvedBy,
                     approvedAt = DateTime.UtcNow
                 };
                 await _DBHelper.InsertApproved(approved);
 
                 var pullRequests = await _DBHelper.GetPullRequests();
-                await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
+                await _hub.Clients.All.SendAsync("" +
+                                                 "update" +
+                                                 "PullRequests", pullRequests);
 
             }
         }
 
-        // DELETE api/PullRequest
-        [HttpDelete]
-        public async Task Delete([FromBody]PullRequestMerged pullRequestMerged)
+        // POST api/PullRequest/merge
+        [HttpPost]
+        [Route("merge")]
+        public async Task Merge([FromBody]PullRequestMerged pullRequestMerged)
         {
-            await _DBHelper.DeletePullRequest(pullRequestMerged);
+            await _DBHelper.ClosePullRequest(pullRequestMerged);
 
             var pullRequests = await _DBHelper.GetPullRequests();
             await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);

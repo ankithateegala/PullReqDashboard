@@ -45,6 +45,7 @@ namespace PullReqDashboard.API
             //             ServiceLifetime.Transient));
 
             //cors
+            services.AddCors();
             //services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             //{
             //    builder.AllowAnyOrigin()
@@ -74,7 +75,12 @@ namespace PullReqDashboard.API
             
             app.UseStaticFiles();
 
-            //app.UseCors("MyPolicy");
+            app.UseCors(builder => builder
+                                    .WithOrigins("http://pr-dashboard.s3-website-us-east-1.amazonaws.com")
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader()
+                                    .AllowCredentials()
+                                    );
 
             app.UseWebSockets();
             
@@ -93,7 +99,8 @@ namespace PullReqDashboard.API
                 EnableDefaultFiles = true,
                 DefaultFilesOptions =
                 {
-                    DefaultFileNames = {"client.html"}
+                    DefaultFileNames = {"client.html"},
+                    RequestPath = new PathString("/client")
                 },
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "App"))
             };

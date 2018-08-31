@@ -55,7 +55,7 @@ namespace PullReqDashboard.API.Controllers
         [HttpPut]
         public async Task Put([FromBody]PullRequestUpdated pullRequestUpdated)
         {
-            //throw if id not exists
+            //TODO: throw/skip if id not exists
             //if there are reviewers with vote == 10(approved)
             if (pullRequestUpdated.resource.reviewers.Any(y => y.vote == 10))
             {

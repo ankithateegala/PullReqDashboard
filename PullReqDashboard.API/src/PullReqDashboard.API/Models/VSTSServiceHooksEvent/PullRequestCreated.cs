@@ -18,6 +18,7 @@ namespace PullReqDashboard.API.Models.VSTSServiceHooksEvent
     public class resource
     {
         public string pullRequestId { get; set; }
+        public string status { get; set; }
         public createdBy createdBy { get; set; }
         public string title { get; set; }
         public string url { get; set; }

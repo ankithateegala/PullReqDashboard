@@ -31,7 +31,7 @@ namespace PullReqDashboard.API.Utilities
             string randomReviewer1 = teamNames.OrderBy(s => Guid.NewGuid()).First();
             teamNames.Remove(randomReviewer1);
             string randomReviewer2 = teamNames.OrderBy(s => Guid.NewGuid()).First();
-            string randomReviewers = randomReviewer1 + "," + randomReviewer2;
+            string randomReviewers = randomReviewer1 + ", " + randomReviewer2;
             pullRequest.randomReviewers = randomReviewers;
 
             string insertQuery = "INSERT INTO PullRequest (Id, CreatedAt, Title, Url, CreatedBy, RandomReviewers)"

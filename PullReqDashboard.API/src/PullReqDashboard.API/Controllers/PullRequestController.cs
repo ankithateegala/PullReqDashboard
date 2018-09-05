@@ -56,13 +56,13 @@ namespace PullReqDashboard.API.Controllers
         [Route("update")]
         public async Task Update([FromBody]PullRequestUpdated pullRequestUpdated)
         {
-            //TODO: throw/skip if id not exists
+            //TODO: throw if id not exists
             //if there are reviewers with vote == 10(approved)
             if (pullRequestUpdated.resource.reviewers.Any(y => y.vote == 10))
             {
                 //get the existing list of approvers and compare
                 var approvers = _DBHelper.GetApprovers(pullRequestUpdated).Result;
-                var newApprover =  pullRequestUpdated.resource.reviewers.Where(x => !approvers.Contains(x.displayName));
+                var newApprover =  pullRequestUpdated.resource.reviewers.Where(x => x.vote == 10 && !x.displayName.EndsWith(" Team") && !approvers.Contains(x.displayName));
                 if (newApprover.Count() != 1) { throw new ArgumentException(); }//why would this happen??
 
                 var approvedBy = newApprover.First().displayName;
@@ -75,9 +75,7 @@ namespace PullReqDashboard.API.Controllers
                 await _DBHelper.InsertApproved(approved);
 
                 var pullRequests = await _DBHelper.GetPullRequests();
-                await _hub.Clients.All.SendAsync("" +
-                                                 "update" +
-                                                 "PullRequests", pullRequests);
+                await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
 
             }
         }
@@ -87,10 +85,12 @@ namespace PullReqDashboard.API.Controllers
         [Route("merge")]
         public async Task Merge([FromBody]PullRequestMerged pullRequestMerged)
         {
-            await _DBHelper.ClosePullRequest(pullRequestMerged);
-
-            var pullRequests = await _DBHelper.GetPullRequests();
-            await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
+            if (pullRequestMerged.resource.status == "completed")
+            {
+                await _DBHelper.ClosePullRequest(pullRequestMerged);
+                var pullRequests = await _DBHelper.GetPullRequests();
+                await _hub.Clients.All.SendAsync("updatePullRequests", pullRequests);
+            }
         }
     }
 }
